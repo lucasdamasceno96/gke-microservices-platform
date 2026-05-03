@@ -2,7 +2,7 @@ terraform {
   required_version = ">= 1.3.0"
 
   backend "gcs" {
-    bucket = "ldp21k-labs-tfstate-${var.project_id}"
+    bucket = "ldp21k-labs-tfstate"
     prefix = "terraform/state"
   }
 
