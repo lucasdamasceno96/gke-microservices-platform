@@ -2,6 +2,7 @@
 resource "google_compute_network" "vpc" {
   name                    = "gke-vpc"
   auto_create_subnetworks = false
+  depends_on              = [google_project_service.enabled_apis] # Waiting APIs
 }
 
 resource "google_compute_subnetwork" "subnet" {
