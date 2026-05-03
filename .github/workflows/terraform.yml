@@ -13,6 +13,10 @@ on:
       - "k8s/**"
   workflow_dispatch: # Allows manual triggering from the GitHub Actions UI
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   id-token: write # Required for authentication via Workload Identity Federation
