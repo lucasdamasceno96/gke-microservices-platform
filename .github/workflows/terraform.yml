@@ -5,30 +5,29 @@ on:
     branches: ["main"]
     paths:
       - "terraform/**"
+      - "k8s/**"
   pull_request:
     branches: ["main"]
     paths:
       - "terraform/**"
-  workflow_dispatch: # Allows manual triggering of the workflow from the GitHub UI.
+      - "k8s/**"
+  workflow_dispatch: # Allows manual triggering from the GitHub Actions UI
 
 permissions:
   contents: read
-  id-token: write # Mandatory for Workload Identity Federation
+  id-token: write # Required for authentication via Workload Identity Federation
 
 jobs:
-  terraform:
-    name: "Terraform Plan & Apply"
+  terraform-and-deploy:
+    name: "Provision & Deploy"
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./terraform
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # WHY: This is where the magic happens.
-      # GitHub exchanges its OIDC token for a GCP temporary access token.
+      # WHY: Authenticate to GCP using WIF (Keyless)
+      # This exchanges a GitHub JWT for a temporary GCP access token.
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v2
@@ -37,18 +36,48 @@ jobs:
           workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
           service_account: ${{ vars.GCP_SA_EMAIL }}
 
+      # WHY: Prepare Terraform environment
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
         run: terraform init
+        working-directory: ./terraform
 
       - name: Terraform Format Check
         run: terraform fmt -check
+        working-directory: ./terraform
 
+      # WHY: Always run Plan to see changes in PRs or before Apply
       - name: Terraform Plan
         run: terraform plan -var="project_id=${{ vars.GCP_PROJECT_ID }}" -no-color
+        working-directory: ./terraform
 
+      # WHY: Only apply infrastructure changes when merging to main
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -var="project_id=${{ vars.GCP_PROJECT_ID }}" -auto-approve
+        working-directory: ./terraform
+
+      # WHY: Get access to the GKE cluster created by Terraform
+      - name: Get GKE Credentials
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: "online-boutique-cluster"
+          location: "us-central1"
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+
+      # WHY: Deploy application manifests to the GKE cluster
+      - name: Deploy Online Boutique
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          # 1. Create the namespace if it doesn't exist
+          kubectl apply -f k8s/online-boutique/namespace.yaml
+
+          # 2. Deploy all microservices
+          kubectl apply -f k8s/online-boutique/release.yaml -n online-boutique
+
+          # 3. Verify deployment health
+          echo "Waiting for frontend to be ready..."
+          kubectl rollout status deployment/frontend -n online-boutique --timeout=300s
