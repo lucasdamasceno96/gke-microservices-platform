@@ -1,0 +1,102 @@
+# =========================
+# Terraform
+# =========================
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
+
+# Sensitive variables
+*.tfvars
+*.tfvars.json
+secrets.auto.tfvars
+
+# =========================
+# Kubernetes / Helm
+# =========================
+*.kubeconfig
+kubeconfig*
+*.yaml.swp
+*.yml.swp
+
+# Helm
+charts/*/charts/
+charts/*/tmp/
+*.tgz
+
+# =========================
+# Logs & Debug
+# =========================
+*.log
+logs/
+debug.log
+
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
+
+# IntelliJ / JetBrains
+.idea/
+*.iml
+
+# =========================
+# Node (caso use scripts/tools)
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Python (caso use automações)
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# =========================
+# Environment / Secrets
+# =========================
+.env
+.env.*
+*.key
+*.pem
+*.crt
+credentials.json
+service-account.json
+temp.md
+
+# =========================
+# GCloud / Auth
+# =========================
+.gcloud/
+adc.json
+
+# =========================
+# Build / Temp
+# =========================
+dist/
+build/
+tmp/
+temp/
+.cache/
+
+# =========================
+# Misc
+# =========================
+*.bak
+*.swp
+*.tmp

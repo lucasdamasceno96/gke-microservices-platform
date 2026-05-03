@@ -7,10 +7,12 @@ resource "google_service_account" "github_actions" {
 # 2. Grant permissions to the Service Account
 resource "google_project_iam_member" "github_actions_roles" {
   for_each = toset([
-    "roles/container.admin",              # To deploy to GKE
-    "roles/compute.networkAdmin",         # To manage VPC
-    "roles/storage.admin",                # To manage TF state bucket
-    "roles/iam.workloadIdentityPoolAdmin" # To manage IAM if needed
+    "roles/container.admin",                 # To deploy to GKE
+    "roles/compute.networkAdmin",            # To manage VPC
+    "roles/storage.admin",                   # To manage TF state bucket
+    "roles/iam.workloadIdentityPoolAdmin",   # To manage IAM if needed
+    "roles/iam.serviceAccountAdmin",         # To manage service accounts if needed
+    "roles/resourcemanager.projectIamAdmin", # To manage project-level IAM if needed
   ])
   project = var.project_id
   role    = each.key
