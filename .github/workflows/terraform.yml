@@ -1,16 +1,17 @@
 name: "Terraform & Infrastructure"
-
+# Blocking the auto detection of changes to avoid unnecessary runs on non-infrastructure changes.
+# on:
+#   push:
+#     branches: ["main"]
+#     paths:
+#       - "terraform/**"
+#       - "k8s/**"
+#   pull_request:
+#     branches: ["main"]
+#     paths:
+#       - "terraform/**"
+#       - "k8s/**"
 on:
-  push:
-    branches: ["main"]
-    paths:
-      - "terraform/**"
-      - "k8s/**"
-  pull_request:
-    branches: ["main"]
-    paths:
-      - "terraform/**"
-      - "k8s/**"
   workflow_dispatch: # Allows manual triggering from the GitHub Actions UI
 
 concurrency:

@@ -1,84 +1,70 @@
-# GKE Microservices Platform (Online Boutique)
+<div align="center">
+  <img src="./assets/k8s-master.jpg" alt="K8s Master Concept" width="400" style="border-radius: 15px;"/>
 
-A lean, professional deployment of Google's [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo) microservices application on Google Kubernetes Engine (GKE).
+  <h1>🚀 GKE Microservices Platform (Online Boutique)</h1>
 
-## 🎯 Architecture Overview
+  <p><i>A lean, professional, and secure deployment of Google's 11-tier microservices application on Kubernetes.</i></p>
 
-- **Cloud Provider:** Google Cloud Platform (GCP)
-- **Infrastructure as Code:** Terraform (State stored remotely in GCS)
-- **Kubernetes:** GKE Autopilot (Cost-effective, zero node management)
-- **CI/CD:** GitHub Actions (Direct deployment via `kubectl`/`helm`)
-- **Security:** Workload Identity Federation (Keyless authentication)
+  <!-- Badges -->
+  <img src="https://img.shields.io/badge/GoogleCloud-%234285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white" />
+  <img src="https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white" />
+  <img src="https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white" />
+  <img src="https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white" />
+</div>
 
-## 🚀 Deployment Pipeline
+<br>
 
-1.  **Terraform:** Provisions VPC, Subnets, and the GKE Autopilot cluster.
-2.  **GitHub Actions:** Authenticates to GCP via Workload Identity and deploys the application manifests.
+## 🎯 The Mission
+
+The goal of this project is to deploy a complex microservices architecture using modern **Platform Engineering** best practices. No ClickOps, no long-lived service account keys, and zero node-management overhead. Just code, automation, and security.
+
+---
 
 ## 🏗️ Architecture at a Glance
 
-flowchart TB
-%% Users
-U[User / Browser]
+<div align="center">
+  <img src="./assets/full-arch.jpg" alt="Architecture Diagram" width="800" />
+</div>
 
-    %% GCP
-    subgraph GCP[Google Cloud Platform]
+<br>
 
-        %% Networking / Entry
-        LB[Load Balancer / Ingress]
+- **☁️ Cloud Provider:** Google Cloud Platform (GCP)
+- **🧱 Infrastructure as Code:** Terraform (State stored remotely and securely in a GCS bucket)
+- **☸️ Kubernetes:** GKE Autopilot (Cost-effective, zero node management, pay-per-pod)
+- **🤖 CI/CD:** GitHub Actions (Direct deployment via `kubectl`)
+- **🛡️ Security:** Workload Identity Federation (Keyless authentication - OIDC)
 
-        %% GKE Cluster
-        subgraph GKE[GKE Autopilot Cluster]
+---
 
-            %% Microservices
-            FE[Frontend Service]
-            PS[Product Catalog Service]
-            CT[Cart Service]
-            CO[Checkout Service]
-            PY[Payment Service]
-            SH[Shipping Service]
-            RE[Recommendation Service]
-            EM[Email Service]
-            CU[Currency Service]
-            AD[Ad Service]
+## 🚀 The Pipeline (GitOps Flow)
 
-        end
+This repository is fully automated. Merging to `main` triggers the following lifecycle:
 
-        %% State / Infra
-        TF[Terraform]
-        GCS[GCS Bucket (Terraform State)]
+1. **🔐 Auth:** GitHub Actions exchanges its OIDC token for a temporary GCP access token via Workload Identity.
+2. **🏗️ Provisioning:** `terraform plan` and `terraform apply` ensure the VPC, Subnets, and GKE cluster are in the desired state.
+3. **🚢 Deployment:** The pipeline connects to GKE and applies the Kubernetes manifests for all 11 microservices (Frontend, Cart, Redis, Checkout, etc.) in the `online-boutique` namespace.
+4. **✅ Health Check:** `kubectl rollout status` waits for the frontend to be fully available before marking the pipeline as successful.
 
-    end
+---
 
-    %% CI/CD
-    subgraph CICD[CI/CD Pipeline]
-        GH[GitHub Repository]
-        GA[GitHub Actions]
-    end
+## 📸 Mission Accomplished (The Proof)
 
-    %% Auth
-    WI[Workload Identity Federation]
+Here is the infrastructure running successfully in production:
 
-    %% Flow
-    U --> LB
-    LB --> FE
+### 1. Terraform & GitHub Actions in perfect sync
 
-    FE --> PS
-    FE --> CT
-    FE --> RE
-    FE --> AD
+<img src="./assets/gke1.jpg" alt="GitHub Actions Pipeline Success" width="800" />
 
-    CT --> CO
-    CO --> PY
-    CO --> SH
-    CO --> EM
-    CO --> CU
+### 2. The 11 Microservices alive on GKE
 
-    %% CI/CD Flow
-    GH --> GA
-    GA --> WI
-    WI --> GKE
+<img src="./assets/gke2.jpg" alt="Kubernetes Pods Running" width="800" />
 
-    %% Terraform Flow
-    TF --> GCS
-    TF --> GKE
+---
+
+## 🧹 Cost Optimization (Teardown)
+
+To keep the cloud bill lean after the demonstration, the entire environment can be destroyed safely:
+
+```bash
+terraform destroy -var="project_id=YOUR_PROJECT_ID"
+```
