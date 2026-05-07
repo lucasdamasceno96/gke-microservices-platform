@@ -12,13 +12,20 @@
   <img src="https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white" />
 </div>
 
-<br>
+<h2> 🎯 Mission </h2>
 
-## 🎯 The Mission
+A **lean, production-style Kubernetes platform** built to prove that the basics are enough when done right.
 
-The goal of this project is to deploy a complex microservices architecture using modern **Platform Engineering** best practices. No ClickOps, no long-lived service account keys, and zero node-management overhead. Just code, automation, and security.
+Ship fast, keep it simple, and operate with confidence.
 
----
+* No ClickOps
+* No static credentials
+* No node management
+* No manual deployments
+
+Only infrastructure as code, secure automation, GitOps workflows, and GKE Autopilot.
+
+This project shows how Platform Engineering principles can reduce complexity while still supporting a real 11-microservice system with security, scalability, and cost efficiency built in from day one.
 
 ## 🏗️ Architecture at a Glance
 
